@@ -27,3 +27,6 @@ int proxy_socketId;
 // As soon as any client sends a request to our proxy server, we will create a new thread for that and open a new socket for handling those client requests
 
 pthread_t tid[MAX_CLIENTS];
+
+sem_t semaphore;
+pthread_mutex_t lock;
