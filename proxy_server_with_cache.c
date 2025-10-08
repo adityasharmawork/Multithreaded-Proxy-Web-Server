@@ -13,3 +13,6 @@ struct cache_element { // This is basically a list of all cache elements (cache_
     cache_element* next;
 };
 
+cache_element* find(char* url);
+int add_cache_element(char* data, int size, char* url)
+void remove_cache_element();
