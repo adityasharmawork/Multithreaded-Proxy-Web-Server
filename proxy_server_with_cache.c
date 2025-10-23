@@ -2,7 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
-#include<pthread.h>
+#include <pthread.h>
+#include <semaphore.h>
 
 #define MAX_CLIENTS 10
 typedef struct cache_element cache_element;
