@@ -41,3 +41,7 @@ pthread_t tid[MAX_CLIENTS];
 
 sem_t semaphore;
 pthread_mutex_t lock;
+
+cache_element* head;
+int cache_size;
+
