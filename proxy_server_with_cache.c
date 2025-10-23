@@ -51,4 +51,11 @@ int main(int argc, char* argv[]) {
     sem_init(&semaphore, 0, MAX_CLIENTS); // 0 is the minimum value of sempahore
     pthread_mutex_init(&lock, NULL); // We need to define it NULL, as in C Language evevrything is garbage value by default
 
+    if(argv == 2) { // ./proxy 9090 (It means user has also provided a port number, so we should run it in that port instead of hard coded 8080)
+        port_number = atoi(argv[1]);
+    } else {
+        printf("Too few arguments\n");
+        exit(1);
+    }
+
 }
