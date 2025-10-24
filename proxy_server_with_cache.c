@@ -47,7 +47,7 @@ int cache_size;
 
 int main(int argc, char* argv[]) {
     int client_socketId, client_len;
-    struct sockaddr server_addr, client_addr;
+    struct sockaddr_in server_addr, client_addr;
     sem_init(&semaphore, 0, MAX_CLIENTS); // 0 is the minimum value of sempahore
     pthread_mutex_init(&lock, NULL); // We need to define it NULL, as in C Language evevrything is garbage value by default
 
