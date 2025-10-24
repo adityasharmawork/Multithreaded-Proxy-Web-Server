@@ -68,4 +68,11 @@ int main(int argc, char* argv[]) {
 
     int reuse = 1; // If the socket is made, we need to reuse that socket
 
+    if(setsockopt(proxy_socketId, SOL_SOCKET, SO_REUSEADDR, (const char*)&reuse, sizeof(reuse)) < 0) {
+        perror("setSockOpt failed\n");
+    }
+
+    bzero((char*)&server_addr, sizeof(server_addr)); // As C language by default, sets all defualt values to garbage values, we need to clean them
+
+
 }
