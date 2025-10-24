@@ -73,6 +73,7 @@ int main(int argc, char* argv[]) {
     }
 
     bzero((char*)&server_addr, sizeof(server_addr)); // As C language by default, sets all defualt values to garbage values, we need to clean them
-
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(port_number);
 
 }
