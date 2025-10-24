@@ -75,5 +75,13 @@ int main(int argc, char* argv[]) {
     bzero((char*)&server_addr, sizeof(server_addr)); // As C language by default, sets all defualt values to garbage values, we need to clean them
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(port_number);
+    server_addr.sin_addr.s_addr = INADDR_ANY;
+
+    if(bind(proxy_socketId, (struct sockaddr*)&server_addr, sizeof(server_addr)) < 0) {
+        perror("Port is not available\n");
+        exit(1);
+    }
+
+    printf("Binding on port : %d\n", port_number);
 
 }
