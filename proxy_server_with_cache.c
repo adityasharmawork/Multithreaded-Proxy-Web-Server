@@ -58,4 +58,14 @@ int main(int argc, char* argv[]) {
         exit(1);
     }
 
+    printf("Starting Proxy Server at Port : %d\n", port_number);
+    proxy_socketId = socket(AF_INET, SOCK_STREAM, 0); // AF_INET is for using IPV4, and SOCK_STREAM directs to use TCP over UDP for a better and secure connection with three way handshake
+
+    if(proxy_socketId < 0) {
+        perror("Failed to create a socket\n");
+        exit(1);
+    }
+
+    int reuse = 1; // If the socket is made, we need to reuse that socket
+
 }
