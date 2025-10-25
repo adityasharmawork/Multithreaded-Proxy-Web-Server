@@ -117,7 +117,21 @@ void * thread_fn(void * socketNew) { // void 8 means anything data type can be p
             }
         }
         ParsedRequest_destroy(request);
+    } else if(bytes_send_client == 0) {
+        printf("Client is disconnected\n");
     }
+
+    shutdown(socket, SHUT_RDWR);
+    close(socket);
+    free(buffer);
+    sem_post(&semaphore);
+    sem_getvalue(&semaphore, p);
+
+    printf("Semaphore post value is : %d\n", p);
+    
+    free(tempReq);
+
+    return NULL;
 }
 
 int main(int argc, char* argv[]) {
