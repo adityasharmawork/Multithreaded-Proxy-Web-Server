@@ -90,6 +90,19 @@ int main(int argc, char* argv[]) {
         exit(1);
     }
 
-    
+    int i = 0;
+    int Connected_socketId[MAX_CLIENTS];
+
+    while(1) {
+        bzero((char *)&client_addr, sizeof(client_addr));
+        client_len = sizeof(client_addr);
+        client_socketId = accept(proxy_socketId, (struct sockaddr*)&client_addr, (socklen_t*)&client_len);
+        if(client_socketId < 0) {
+            printf("Not able to connect\n");
+            exit(1);
+        } else {
+            Connected_socketId[i] = client_socketId;
+        }
+    }
 
 }
