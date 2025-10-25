@@ -57,6 +57,20 @@ int handle_request(int clientSocketId, ParsedRequest* request, char* tempReq) {
 
     size_t len = strlen(buf);
 
+    if(ParsedHeader_set(request, "Connection", "close") < 0) {
+        printf("Set header key is not working\n");
+    }
+
+    if(ParsedHeader_get(request, "Host") == NULL) {
+        if(ParsedHeader_set(request, "Host", request->host) < 0) {
+            printf("Set host header key is not working\n");
+        }
+    }
+
+    if(ParsedRequest_unparse_headers(request, buf+len, (size_t)MAX_BYTES-len) < 0) {
+        printf("Unparse failed\n");
+    }
+
 }
 
 void * thread_fn(void * socketNew) { // void 8 means anything data type can be passed, it is like any keyword in Java
