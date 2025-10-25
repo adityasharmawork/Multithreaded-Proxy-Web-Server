@@ -16,6 +16,8 @@
 #include <semaphore.h>
 
 #define MAX_CLIENTS 10
+#define MAX_BYTES 4096
+
 typedef struct cache_element cache_element;
 
 
@@ -44,6 +46,29 @@ pthread_mutex_t lock;
 
 cache_element* head;
 int cache_size;
+
+void * thread_fn(void * socketNew) { // void 8 means anything data type can be passed, it is like any keyword in Java
+    sem_wait(&semaphore); // sem_wait reduces the value of semaphore by 1 and checks if there is space to create new threads for any new client request
+    int p;
+    sem_getvalue(&semaphore, p);
+    printf("Semaphore value is : %d\n", p);
+    int *t = (int*) socketNew;
+    int socket = *t; // Copying the value of socketNew to socket
+    
+    int bytes_send_client, len;
+
+    char* buffer = (char*)calloc(MAX_BYTES, sizeof(char));
+    bzero(buffer, MAX_BYTES);
+
+    bytes_send_client = recv(socket, buffer, MAX_BYTES, 0);
+
+    while(bytes_send_client > 0) {
+        len = strlen(buffer);
+        if(substr(buffer, "\r\n\r\n") == NULL)  { // Every HTTP request ends with "\r\n\r\n", so until we get this, keep on receiving bytes data from request
+            bytes_send_client = recv(socket, buffer + len, MAX_BYTES - len, 0);
+        }
+    }
+}
 
 int main(int argc, char* argv[]) {
     int client_socketId, client_len;
