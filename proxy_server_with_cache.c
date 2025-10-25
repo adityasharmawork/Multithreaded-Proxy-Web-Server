@@ -47,6 +47,20 @@ pthread_mutex_t lock;
 cache_element* head;
 int cache_size;
 
+int handle_request(int clientSocketId, ParsedRequest* request, char* tempReq) {
+    char* buf = (char*)malloc((sizeof(char) * MAX_BYTES));
+    strcpy(buf, "GET");
+    strcat(buf, request->path);
+    strcat(buf, " ");
+    strcat(buf, request->version);
+    strcat(buf, "\r\n");
+
+    size_t len = strlen(buf);
+
+    
+
+}
+
 void * thread_fn(void * socketNew) { // void 8 means anything data type can be passed, it is like any keyword in Java
     sem_wait(&semaphore); // sem_wait reduces the value of semaphore by 1 and checks if there is space to create new threads for any new client request
     int p;
