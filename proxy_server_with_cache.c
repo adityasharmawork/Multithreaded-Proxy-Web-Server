@@ -57,8 +57,6 @@ int handle_request(int clientSocketId, ParsedRequest* request, char* tempReq) {
 
     size_t len = strlen(buf);
 
-    
-
 }
 
 void * thread_fn(void * socketNew) { // void 8 means anything data type can be passed, it is like any keyword in Java
