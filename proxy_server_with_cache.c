@@ -95,7 +95,29 @@ void * thread_fn(void * socketNew) { // void 8 means anything data type can be p
         }
         printf("Data retrieved from the cache : \n");
         printf("%s\n\n", response);
-
+    } else if(bytes_send_client > 0) { // If it is not there is cache, we need to use the ParsedRequest library
+        len = strlen(buffer);
+        ParsedRequest* request = ParsedRequest_create();
+        
+        if(ParsedRequest_parse(request, buffer, len) < 0) {
+            printf("Parsing failed\n");
+        } else {
+            bzero(buffer, MAX_BYTES);
+            if(!strcmp(request->method, "GET")) { // strcmp returns 0 if both the request->method and "GET" are equal, i.e. it tells if the request is calling a GET method
+                if(request->host && request->path && checkHTTPversion(request->version) == 1) { // The libary checkHTTPversion accepts only HTTP version 1.0
+                    bytes_send_client = handle_request(socket, request, tempReq);
+                    if(bytes_send_client == -1) { // Actual Main Server having website data sends nothing in return
+                        sendErrorMessage(socket, 500); // This is how dfferent HTTP Status codes are sent back
+                    }
+                } else { // The request couldn't be parsed by our server
+                    sendErrorMessage(socket, 500);
+                }
+            } else {
+                printf("Only GET method supported till now\n");
+            }
+        }
+        ParsedRequest_destroy(request);
+    }
 }
 
 int main(int argc, char* argv[]) {
