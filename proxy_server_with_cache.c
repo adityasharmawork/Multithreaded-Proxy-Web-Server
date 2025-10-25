@@ -66,8 +66,36 @@ void * thread_fn(void * socketNew) { // void 8 means anything data type can be p
         len = strlen(buffer);
         if(substr(buffer, "\r\n\r\n") == NULL)  { // Every HTTP request ends with "\r\n\r\n", so until we get this, keep on receiving bytes data from request
             bytes_send_client = recv(socket, buffer + len, MAX_BYTES - len, 0);
+        } else {
+            break;
         }
     }
+
+    // As soon as we get any request, we need to search it in our cache, for this we are making a copy of this request 
+    // It is not necessary, but we do it for a good practice
+
+    char *tempReq = (char *)malloc(strlen(buffer) * sizeof(char)+1);
+    for(int i = 0; i < strlen(buffer); i++) {
+        tempReq[i] = buffer[i];
+    }
+
+    struct cache_element* temp = find(tempReq);
+
+    if(temp != NULL) { // If it exists in cache, we can use it
+        int size =  temp->len/sizeof(char);
+        int pos = 0;
+        char response[MAX_BYTES];
+        while(pos < size) {
+            bzero(response, MAX_BYTES);
+            for(int i = 0; i < MAX_BYTES; i++) {
+                response[i] = temp->data[i];
+                pos++;
+            }
+            send(socket, response, MAX_BYTES, 0);
+        }
+        printf("Data retrieved from the cache : \n");
+        printf("%s\n\n", response);
+
 }
 
 int main(int argc, char* argv[]) {
