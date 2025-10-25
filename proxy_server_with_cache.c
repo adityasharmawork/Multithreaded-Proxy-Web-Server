@@ -103,6 +103,16 @@ int main(int argc, char* argv[]) {
         } else {
             Connected_socketId[i] = client_socketId;
         }
+        struct sockaddr_in * client_pt = (struct sockaddr_in *)&client_addr;
+        struct in_addr ip_addr = client_pt->sin_addr;
+        char str[INET_ADDRSTRLEN];
+        inet_ntop(AF_INET, &ip_addr, str, INET_ADDRSTRLEN);
+        printf("Client is connected with port numebr : %d and ip address : %s\n", ntohs(client_addr.sin_port), str);
+    
+        pthread_create(&tid[i], NULL, thread_fn, (void *) &Connected_socketId[i]); // To make new thread, and thread_fn defines the function that should run when creating a new thread for a new client
+        i++;
     }
+    close(proxy_socketId);
+    return 0;
 
 }
