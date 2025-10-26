@@ -108,6 +108,12 @@ int handle_request(int clientSocketId, ParsedRequest* request, char* tempReq) {
     }
 
     int remoteSocketId = connectRemoteServer(request->host, server_port);
+    if(remoteSocketId < 0) {
+        fprintf(stderr, "Error in generating a Remote Socket Id\n");
+        return -1;
+    }
+
+    
 
 }
 
