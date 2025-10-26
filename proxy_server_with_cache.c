@@ -140,6 +140,11 @@ int handle_request(int clientSocketId, ParsedRequest* request, char* tempReq) {
             break;
         }
         bzero(buf, MAX_BYTES);
+
+        // As soon as we receive the bytes data from the actual main remote server, we are continuously sending it to client, so we are first sending it to the client socket,
+        // Then, storing it in the buffer, so that later it can be stored in the cache,
+        // Then, again receiving next set of bytes from the actual main remote server
+        bytes_send = recv(remoteSocketId, buf, MAX_BYTES-1, 0);
     }
 
 }
