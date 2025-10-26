@@ -113,6 +113,9 @@ int handle_request(int clientSocketId, ParsedRequest* request, char* tempReq) {
         return -1;
     }
 
+    int bytes_send = send(remoteSocketId, buf, strlen(buf), 0);
+    bzero(buf, MAX_BYTES);
+
     
 
 }
