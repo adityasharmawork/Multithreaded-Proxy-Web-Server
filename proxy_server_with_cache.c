@@ -113,10 +113,34 @@ int handle_request(int clientSocketId, ParsedRequest* request, char* tempReq) {
         return -1;
     }
 
+    // The below is the implementation of sending bytes from our proxy server to the actual main remote server
     int bytes_send = send(remoteSocketId, buf, strlen(buf), 0);
     bzero(buf, MAX_BYTES);
 
-    
+    // The below is the implementation of receiving bytes from the actual main remote server to our proxy server
+    bytes_send = recv(remoteSocketId, buf, MAX_BYTES-1, 0); // Assuming we will keep on receiving bytes upto MAX_BYTES and as they appear one by one as "a b c ... \0" (The last character is \0, this is why we are using MAX_BYTES-1)
+    char * temp_buffer = (char*)malloc(sizeof(char)*MAX_BYTES);
+    int temp_buffer_size = MAX_BYTES;
+    int temp_buffer_index = 0;
+
+    // The below shows that we need to receive the bytes from the actual main remote server to our proxy server till bytes_send (Which actually refers to bytes received in this case) > 0
+    while(bytes_send > 0) { // The bytes_send actually refers to bytes we receive here, and we will keep on receiving these bytes on socket till we keep getting it
+        bytes_send = send(clientSocketId, buf, bytes_send, 0); // We are sending all bytes our proxy server is receiving from the actual main remote server to the client socket
+        
+        for(int i = 0; i < bytes_send / sizeof(char); i++) { // Ultimately at last we need to store this bytes data to our cache as well, so we need to store it to buffer as well
+            temp_buffer[temp_buffer_index] = buf[i];
+            temp_buffer_index++;
+        }
+
+        temp_buffer_size += MAX_BYTES;
+        temp_buffer = (char*)realloc(temp_buffer, temp_buffer_size);
+
+        if(bytes_send < 0) {
+            perror("Error in sending data to the client\n");
+            break;
+        }
+        bzero(buf, MAX_BYTES);
+    }
 
 }
 
