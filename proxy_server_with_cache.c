@@ -47,6 +47,37 @@ pthread_mutex_t lock;
 cache_element* head;
 int cache_size;
 
+int connectRemoteServer(char* host_addr, int port_num) { // Function connecting our proxy server to final main server
+    int remoteSocket = socket(AF_INET, SOCK_STREAM, 0); // Socket on the Final main Remote Server which our proxy server connects to
+    if(remoteSocket < 0) {
+        printf("Error in creating your socket to Remote Server\n");
+        return -1;
+    }
+
+    struct hostent* host = gethostbyname(host_addr);
+    if(host == NULL) {
+        fprintf(stderr, "No such host exists\n");
+        return -1;
+    }
+
+    struct sockaddr_in server_addr;
+    bzero((char*)&server_addr, sizeof(server_addr));
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_port = htons(port_num);
+
+    // Actual - 
+    // bcopy((char *)&host->h_addr, (char *)&server_addr.sin_addr.s_addr, host->h_length);
+    // Fixed - 
+    bcopy((char *)host->h_addr_list[0], (char *)&server_addr.sin_addr.s_addr, host->h_length);
+
+    if(connect(remoteSocket, (struct sockaddr *)&server_addr, (size_t)sizeof(server_addr)) < 0) {
+        fprintf(stderr, "Error in connecting\n");
+        return -1;
+    }
+
+    return remoteSocket;
+}
+
 int handle_request(int clientSocketId, ParsedRequest* request, char* tempReq) {
     char* buf = (char*)malloc((sizeof(char) * MAX_BYTES));
     strcpy(buf, "GET");
@@ -70,6 +101,13 @@ int handle_request(int clientSocketId, ParsedRequest* request, char* tempReq) {
     if(ParsedRequest_unparse_headers(request, buf+len, (size_t)MAX_BYTES-len) < 0) {
         printf("Unparse failed\n");
     }
+
+    int server_port = 80; // This is the port of the actual main server, not the proxy server (In most of the cases, the servers handling HTTP requests end with 80)
+    if(request->port != NULL) {
+        server_port = atoi(request->port);
+    }
+
+    int remoteSocketId = connectRemoteServer(request->host, server_port);
 
 }
 
