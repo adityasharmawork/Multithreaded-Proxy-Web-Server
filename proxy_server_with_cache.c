@@ -147,6 +147,9 @@ int handle_request(int clientSocketId, ParsedRequest* request, char* tempReq) {
         bytes_send = recv(remoteSocketId, buf, MAX_BYTES-1, 0);
     }
 
+    temp_buffer[temp_buffer_index] = '\0'; // This ensures for example, even if the temp_buffer had the capacity of holding 1000 characters but if it has only 5 characters, it will add a '\0' at 6th position, making it converting to string very possible
+
+
 }
 
 void * thread_fn(void * socketNew) { // void 8 means anything data type can be passed, it is like any keyword in Java
