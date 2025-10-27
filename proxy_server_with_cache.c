@@ -148,12 +148,12 @@ int handle_request(int clientSocketId, ParsedRequest* request, char* tempReq) {
     }
 
     temp_buffer[temp_buffer_index] = '\0'; // This ensures for example, even if the temp_buffer had the capacity of holding 1000 characters but if it has only 5 characters, it will add a '\0' at 6th position, making it converting to string very possible
-    free(buf);
+    free(buf); // Freeing all dynamically created values
     add_cache_element(temp_buffer, strlen(temp_buffer), tempReq); // Adding temp_bufer to cache
-    free(temp_buffer);
-    close(remoteSocketId);
+    free(temp_buffer); // Freeing all dynamically created values
+    close(remoteSocketId); // Closing the Socket connected to the Remote Server
     
-    return 0;
+    return 0; // Everything worked well, with no errors
 
 }
 
