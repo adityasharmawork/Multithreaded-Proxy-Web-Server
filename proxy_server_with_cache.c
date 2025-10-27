@@ -157,6 +157,21 @@ int handle_request(int clientSocketId, ParsedRequest* request, char* tempReq) {
 
 }
 
+int checkHTTPversion(char * msg) {
+    
+    int version = -1;
+    
+    if(strncmp(msg, "HTTP/1.1", 8) == 0) {
+        version = 1;
+    } else if(strncmp(msg, "HTTP/1.0", 8) == 0) {
+        version = 1;
+    } else {
+        version = -1;
+    }
+
+    return version;
+}
+
 void * thread_fn(void * socketNew) { // void 8 means anything data type can be passed, it is like any keyword in Java
     sem_wait(&semaphore); // sem_wait reduces the value of semaphore by 1 and checks if there is space to create new threads for any new client request
     int p;
