@@ -17,6 +17,8 @@
 
 #define MAX_CLIENTS 10
 #define MAX_BYTES 4096
+#define MAX_ELEMENT_SIZE 10*(1<<10) // 10 * 2^10
+#define MAX_SIZE 200*(1<<20) // 200 * 2^20
 
 typedef struct cache_element cache_element;
 
@@ -399,9 +401,37 @@ cache_element* find(char* url) {
         printf("URL not found\n");
     }
 
-    temp_lock_val = pthread_mutex_unlock(&lock);
+    temp_lock_val = pthread_mutex_unlock(&lock); // Releasing the Lock
     printf("Lock is unlocked\n");
 
     return site;
+
+}
+
+int add_cache_element(char* data, int size, char* url) { // Adding elements to cache
+    int temp_lock_val = pthread_mutex_lock(&lock); // Acquiring the Lock
+    printf("Add Cache Lock Acquired : %d\n", temp_lock_val);
     
+    int element_size = size+1+strlen(url)+sizeof(cache_element); // size -> Input element buffer size, strlen(url) -> size of url, sizeof(cache_element) -> size of struct
+    
+    if(element_size > MAX_ELEMENT_SIZE) { // Cannot add to cache
+        temp_lock_val = pthread_mutex_unlock(&lock); // Release all locks and return 0 showing this cannot be added
+        printf("Add cache lock is unlocked\n");
+        return 0;
+    } else { // Can be added
+        while(cache_size + element_size > MAX_SIZE) { // cache_size -> size that existing elements in cache have already taken up, element_size -> size of the new element to be added to cache
+            remove_cache_element(); // Keep on removing cache elements until we get a free space to fit the new element to cache
+        }
+
+        // After that, now we can add the new element to the cache
+        // Now, let us create the cache_element to be added to cache
+        cache_element* element = (cache_element*)malloc(sizeof(cache_element)); // Dynamically creating space for the new element to add to cache
+        element->data = (char*)malloc(sizeof(size+1)); // Size of the new input buffer element to be added to cache, +1 as because at last we are reqired to store an extra data
+        strcpy(element->data, data);
+        element->url = (char*)malloc(1 + (strlen(url) * sizeof(char)));
+        strcpy(element->url, url);
+        element->lru_time_track = time(NULL); // We are adding the element now, that means it is being now, so lru_time_track for this cache element will be set to time(NULL)
+        element->next = head; // The next of this cache element will be set to head, i.e., if it is the first element of the cache_element linked list, the next of this first element will be set to NULL
+        
+    }
 }
