@@ -408,6 +408,40 @@ cache_element* find(char* url) {
 
 }
 
+void remove_cache_element() {
+    cache_element *p;
+    cache_element *q;
+    cache_element *temp;
+
+    int temp_lock_val = pthread_mutex_lock(&lock);
+    printf("Lock is acquired\n");
+
+    if(head != NULL) {
+        for(q = head, p = head, temp = head; q->next != NULL; q = q->next) {
+            if(((q->next)->lru_time_track) < (temp->lru_time_track)) {
+                temp = q->next;
+                p = q;
+            }
+        }
+
+        if(temp == head) {
+            head = head->next;
+        } else {
+            p->next = temp->next;
+        }
+
+        cache_size = cache_size - (temp->len) - sizeof(cache_element) - strlen(temp->url) - 1;
+        free(temp->data);
+        free(temp->url);
+        free(temp);
+
+    }
+
+    temp_lock_val = pthread_mutex_unlock(&lock);
+    printf("Remove cache lock\n");
+
+}
+
 int add_cache_element(char* data, int size, char* url) { // Adding elements to cache
     int temp_lock_val = pthread_mutex_lock(&lock); // Acquiring the Lock
     printf("Add Cache Lock Acquired : %d\n", temp_lock_val);
