@@ -432,6 +432,15 @@ int add_cache_element(char* data, int size, char* url) { // Adding elements to c
         strcpy(element->url, url);
         element->lru_time_track = time(NULL); // We are adding the element now, that means it is being now, so lru_time_track for this cache element will be set to time(NULL)
         element->next = head; // The next of this cache element will be set to head, i.e., if it is the first element of the cache_element linked list, the next of this first element will be set to NULL
-        
+        element->len = size;
+        head = element;
+        cache_size += element_size;
+        temp_lock_val = pthread_mutex_unlock(&lock);
+        printf("Add cache lock is unlocked\n");
+
+        return 1; // It has been added
+    
     }
+
+    return 0; // Nothing has been added
 }
