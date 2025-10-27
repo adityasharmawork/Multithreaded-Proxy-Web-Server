@@ -377,3 +377,31 @@ int main(int argc, char* argv[]) {
     return 0;
 
 }
+
+cache_element* find(char* url) {
+    cache_element* site = NULL;
+    int temp_lock_val = pthread_mutex_lock(&lock);
+    printf("Remove cache Lock acquired : %d\n", temp_lock_val);
+    if(head != NULL) {
+        site = head;
+        while(site != NULL) {
+            if(!strcmp(site->url, url)) {
+                printf("LRU time track before : %ld", site->lru_time_track);
+                printf("\n URL Found\n");
+                // As we are using an LRU Cache and as this URL is just now used, we need to set it's time to now, i.e., time(NULL);
+                site->lru_time_track = time(NULL);
+                printf("LRU time track after : %ld\n", site->lru_time_track);
+                break;
+            }
+            site = site->next;
+        }
+    } else {
+        printf("URL not found\n");
+    }
+
+    temp_lock_val = pthread_mutex_unlock(&lock);
+    printf("Lock is unlocked\n");
+
+    return site;
+    
+}
